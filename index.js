@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const { OpenAI } = require("openai");
-const configuration = "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"
 const openai = new OpenAI({ apiKey: configuration });
 const session = require('express-session')
 const { exec } = require("child_process");
