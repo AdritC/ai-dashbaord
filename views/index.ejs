@@ -1,0 +1,105 @@
+<html>
+
+<head>
+    <title>Dasboard</title>
+</head>
+
+<body>
+    <script>
+        function findCommonCharacters(str1, str2) {
+            let commonchar = [];
+            let count = 0;
+            console.log(str1)
+            console.log(str2)
+            const obj = str2.split("");
+            for (const str of str1) {
+                let idx = obj.findIndex(s => s === str);
+                if (idx >= 0) {
+                    commonchar.push(obj.find(s => s === str));
+                    count++;
+                    obj.splice(idx, 1);
+                }
+            }
+            return commonchar;
+        }
+
+        console.log(findCommonCharacters('HELLO', 'BELLO'))
+    </script>
+    <h1>Click on the speech button and ask any information from the given  <a href="/data" target="_blank" rel="noopener noreferrer">data</a></h1>
+
+    <div class="speaker"
+        style="display: flex;justify-content: space-between;width: 13rem;box-shadow: 0 0 13px #0000003d;border-radius: 5px;">
+        <p id="action" style="color: grey;font-weight: 800; padding: 0; padding-left: 2rem;"></p>
+        <button onclick="runSpeechRecog()" style="border: transparent;padding: 0 0.5rem;">
+            Speech
+        </button>
+    </div>
+    <ul id="output" class="hide"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <form id='form' action="/result" method="post">
+        <input type="hidden" name="transcript" id="input">
+    </form>
+
+    <script>
+        runSpeechRecog = () => {
+            document.getElementById("output").innerHTML = "Loading text...";
+            var output = document.getElementById('output');
+            var action = document.getElementById('action');
+            let recognization = new webkitSpeechRecognition();
+            recognization.lang = 'en-IN'
+
+            recognization.onstart = () => {
+                action.innerHTML = "Listening...";
+            }
+            recognization.onresult = (e) => {
+                var transcript = e.results[0][0].transcript;
+                console.log(transcript)
+                location.replace(`http://localhost:3000/result?q=${transcript}`);
+                // fetch('/data')
+                //     .then(res => res.json())
+                //     .then(res => {
+                //         let data = []
+
+                //         for (let i = 0; i < res.users.length; i++) {
+                //             if (findCommonCharacters(transcript, res.users[i])) {
+                //                 let obj = {
+                //                     "number": i,
+                //                     "data_length": findCommonCharacters(transcript, res.users[i]).length
+                //                 }
+                //                 data.push(obj)
+                //             }
+                //         }
+
+                //         const sortedArr = data.sort((a, b) => {
+                //             if (a.data_length < b.data_length) {
+                //                 return -1;
+                //             }
+                //             if (a.data_length > b.data_length) {
+                //                 return 1;
+                //             }
+                //             return 0;
+                //         });
+
+                //         let final_arr = sortedArr.reverse()
+                //         let html = `<li>Reaults for ${transcript}</li>`
+
+                //         for (let i = 0; i < final_arr.length; i++) {
+                //             html += `<li>${res.users[final_arr[i].number]} - ${final_arr[i].data_length * 100 / transcript.length}%</li>`
+                //         }
+
+                //         console.log(html)
+
+                //         output.innerHTML = html;
+                //         output.classList.remove("hide")
+                //         action.innerHTML = "";
+                //     })
+            }
+            recognization.start();
+        };
+    </script>
+</body>
+
+</html>

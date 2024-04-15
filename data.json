@@ -1,0 +1,14 @@
+{
+    "users": [
+        {
+            "name": "John",
+            "location": "Kolkata",
+            "email": "John@gmail.com"
+        },
+        {
+            "name": "Adrit",
+            "location": "Bangalore",
+            "email": "chadrit83@gmail.com"
+        }
+    ]
+}

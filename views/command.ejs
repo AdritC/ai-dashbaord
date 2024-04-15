@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>
+        Command Dashboard
+    </h1>
+    <h2>
+        Current directory: <%=directory%>
+    </h2>
+    <form action="/command" method="post">
+        <input type="text" placeholder="type complete command" name="command">
+        <button type="submit">submit</button>
+    </form>
+</body>
+</html>
