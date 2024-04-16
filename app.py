@@ -8,13 +8,8 @@ client = Client()
 app = Flask(__name__)
 app.secret_key = "wrjohfourwhuorfhjowhhkwhfiury79477248954y278nsjkbk"   
 
-@app.route('/success/<data>', methods=['POST', 'GET'])
-def success(data):
-    return data
-
-
 @app.route('/chat', methods=['POST', 'GET'])
-def login():
+def chat():
     if request.method == 'POST':
         data = json.loads(request.form['query'])
 
@@ -26,6 +21,18 @@ def login():
         print(data)
 
         return response.choices[0].message.content
+    
+@app.route('/gen-image', methods=['POST', 'GET'])
+def gen_img():
+    if request.method == 'POST':
+        response = client.images.generate(
+            model="gemini",
+            prompt=request.form['query']
+        )
+
+        img_url = response.data[0].url
+        print(img_url)
+        return img_url   
  
 if __name__ == '__main__':
     app.run(debug=True)

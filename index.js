@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const { OpenAI } = require("openai");
-const openai = new OpenAI({ apiKey: configuration });
 const session = require('express-session')
 const { exec } = require("child_process");
 const bodyParser = require('body-parser');
 const axios = require('axios')
+const fs = require('fs');
+
+console.log('SERVER STARTED')
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('trust proxy', 1) // trust first proxy
@@ -25,6 +27,10 @@ app.get('/data', (req, res) => {
   res.sendFile('data.json', { root: '.' })
 })
 
+app.get('/input', (req, res) => {
+  res.render('input.ejs')
+})
+
 app.get('/result', (req, res) => {
   const query = req.query.q;
 
@@ -33,32 +39,16 @@ app.get('/result', (req, res) => {
     msg.push(query)
 
     req.session.msglog = JSON.stringify(msg)
-
-    console.log('BIDEN')
   } else {
     req.session.msglog = JSON.stringify([query])
   }
 
   try {
-    async function joe() {
+    async function run() {
       let conversationLog = [
         {
-          role: 'system', content: `You are a powerful ai, which when asked about this "{
-          "users": [
-              {
-                  "name": "Bob",
-                  "location": "Kolkata",
-                  "email": "John@gmail.com"
-                  "description: "talkative"
-              },
-              {
-                  "name": "Joe",
-                  "location": "Bangalore",
-                  "email": "chadrit83@gmail.com",
-                  "description: "silent"
-              }
-          ]
-      }" json data, you give accurate answers.` }
+          role: 'system', content: `You are a powerful ai, which when asked about this ${fs.readFileSync('./data.json').toString()} json data, you give accurate answers.`
+        }
       ];
 
       if (JSON.parse(req.session.msglog).length != 1 && JSON.parse(req.session.replyLog)) {
@@ -75,7 +65,7 @@ app.get('/result', (req, res) => {
             });
           }
         }
-      }else {
+      } else {
         conversationLog.push({
           role: 'user',
           content: JSON.parse(req.session.msglog)[0]
@@ -96,17 +86,14 @@ app.get('/result', (req, res) => {
         if (req.session.replyLog) {
           let msg = JSON.parse(req.session.replyLog);
           msg.push(response.data)
-      
           req.session.replyLog = JSON.stringify(msg)
-          console.log('BINDU')
         } else {
-          console.log('JOE')
           req.session.replyLog = JSON.stringify([response.data])
         }
 
         res.render('result.ejs', { query: query, result: response.data })
       }).catch(err => {
-      console.error(err)
+        console.error(err)
       })
 
       // openai
@@ -123,14 +110,27 @@ app.get('/result', (req, res) => {
       //   });
     }
 
-joe();
+    run();
   } catch (error) {
-  console.log(`ERR: ${error}`);
-}
+    console.log(`ERR: ${error}`);
+  }
 })
 
 app.get('/command', (req, res) => {
   res.render('command.ejs', { directory: __dirname })
+})
+
+app.get('/gen-img', (req, res) => {
+  res.render('image-gen.ejs')
+})
+
+app.get('/res', (req, res) => {
+  const query = req.query.query;  
+  const parms = new URLSearchParams();
+  parms.append(query)
+  axios.post('http://127.0.0.1:5000/gen-img', parms).then(response => {
+    return res.send(`<img src='${response.data}' alt='image' />`)
+  })
 })
 
 app.post('/command', (req, res) => {

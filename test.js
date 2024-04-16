@@ -37,10 +37,23 @@ const run = function (low, high) {
       final_arr.push(Number(final))
     }
   }
+  let data = []
 
-  final_arr.
+  for(let o =0; o < final_arr.length; o++){
+    if(final_arr[o] != NaN){
+      data.push(final_arr[o].toString())
+    }
+  }
 
-  console.log(final_arr)
+  let last_one = []
+
+  for(let o =0; o < data.length; o++){
+    if(data[o] !== "NaN"){
+      last_one.push(Number(data[o]))
+    }
+  }
+
+  return last_one
 };
 
-run(10, 100)
+console.log(run(513, 3854689))
